@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/dsisconeto/arquitetura/api/db"
 	"github.com/dsisconeto/arquitetura/api/helper"
 	"github.com/dsisconeto/arquitetura/core/domain/product"
 	"net/http"
@@ -16,7 +17,8 @@ func ProductCreate(w http.ResponseWriter, r *http.Request) {
 		helper.ResponseBadRequest(w)
 		return
 	}
-
+	repo := factoryProductRepository()
+	defer repo.DB.Close()
 	prod, err := product.UseCaseCreate(data.Name, product.NewCodeBar(data.CodeBar), factoryProductRepository())
 	if err != nil {
 		helper.ResponseErrorJson(w, err)
@@ -26,14 +28,10 @@ func ProductCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 func ProductRegisterRouters(mux *http.ServeMux) {
+
 	mux.HandleFunc("/products/create", ProductCreate)
 }
 
-func factoryProductRepository() product.IRepository {
-	return &product.MockRepository{MockStore: func(product *product.Product) error {
-		product.ID = 1
-		return nil
-	}, MockHasOneByCodeBar: func(codeBar *product.CodeBar) bool {
-		return false
-	}}
+func factoryProductRepository() *product.RepositoryMysql {
+	return product.NewMysqlRepository(db.GetMysql())
 }

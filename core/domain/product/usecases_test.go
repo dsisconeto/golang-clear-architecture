@@ -16,7 +16,7 @@ func TestUseCaseCreate(t *testing.T) {
 		{
 			number: 0,
 			arguments: func() (name string, codeBar *CodeBar, repository IRepository) {
-				repository = &MockRepository{
+				repository = &RepositoryMock{
 					MockStore: func(product *Product) error {
 						return nil
 					},
@@ -62,7 +62,7 @@ func TestUseCaseEdit(t *testing.T) {
 		{
 			number: 0,
 			arguments: func() (id uint, name string, codeBar *CodeBar, repository IRepository) {
-				repository = &MockRepository{
+				repository = &RepositoryMock{
 					MockUpdate: func(product *Product) error {
 						return nil
 					},
